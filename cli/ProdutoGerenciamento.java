@@ -1,5 +1,7 @@
 package cli;
 import model.Produto;
+
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -36,10 +38,10 @@ public class ProdutoGerenciamento {
                     gerenciamento.execPatrimonio();
                     break;
                 case 5:
-                    gerenciamento.execEntrada();
+                    gerenciamento.execEntrada(sc);
                     break;
                 case 6:
-                    gerenciamento.execSaida();
+                    gerenciamento.execSaida(sc);
                     break;
                 case 9:
                     System.out.println("Fim do programa");
@@ -72,16 +74,14 @@ public class ProdutoGerenciamento {
     }
 
     private void execVerEstoque(Scanner sc) {
-        int codigoProcurado;
-        System.out.println("Digite o código do produto desejado: ");
-        codigoProcurado = Integer.parseInt(sc.nextLine());
-        for(Produto produto : produtos){
-            if (produto.getCodigo() == codigoProcurado){
-                System.out.println(produto);
-                return;
-            }
+        Produto produtoProc = null;
+        String codigo = JOptionPane.showInputDialog(null, "Digite o código do produto desejado: ", "Código", JOptionPane.QUESTION_MESSAGE);
+        produtoProc = encontrarProduto(Integer.parseInt(codigo));
+        if (produtoProc != null){
+            System.out.println(produtoProc);
+        } else {
+            System.out.println("Produto não encontrado");
         }
-        System.out.println("Produto não encontrado");
     }
 
     private void execPatrimonio() {
@@ -92,11 +92,42 @@ public class ProdutoGerenciamento {
         System.out.println("Valor em reais estocado: R$" + acumulado);
     }
 
-    private void execEntrada() {
-
+    private void execEntrada(Scanner sc) {
+        Produto produtoProc = null;
+        System.out.println("Digite o código do produto desejado: ");
+        produtoProc = encontrarProduto(Integer.parseInt(sc.nextLine()));
+        if (produtoProc != null){
+            System.out.println("Digite a quantidade de entrada: ");
+            int entrada = Integer.parseInt(sc.nextLine());
+            produtoProc.registrarEntrada(entrada);
+            System.out.println("Entrada registrada");
+        } else {
+            System.out.println("Produto não encontrado");
+        }
     }
 
-    private void execSaida() {
+    private void execSaida(Scanner sc) {
+        try {
+            Produto produtoProc = null;
+            System.out.println("Digite o código do produto desejado: ");
+            produtoProc = encontrarProduto(Integer.parseInt(sc.nextLine()));
+            if (produtoProc != null){
+                System.out.println("Digite a quantidade de saída: ");
+                int saida = Integer.parseInt(sc.nextLine());
+                produtoProc.registrarSaida(saida);
+                System.out.println("Saída registrada");
+            } else {
+                System.out.println("Produto não encontrado");
+            }
+        } catch (Exception e){
+            System.out.println("Aconteceu o erro: "+e.getMessage());
+        }
+    }
 
+    private Produto encontrarProduto(int codigo) {
+        for(Produto produto : produtos){
+            if (produto.getCodigo() == codigo) return produto;
+        }
+        return null;
     }
 }
